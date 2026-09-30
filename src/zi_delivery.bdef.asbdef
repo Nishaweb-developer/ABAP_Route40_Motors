@@ -1,0 +1,31 @@
+managed implementation in class zbp_i_delivery unique;
+strict ( 2 );
+
+define behavior for ZI_Delivery alias Delivery
+persistent table zdelivery
+lock master
+authorization master ( instance )
+{
+  create;
+  update;
+  delete;
+
+  field ( mandatory : create ) DeliveryId;
+  field ( readonly : update )  DeliveryId;
+  field ( readonly )           OpenQty;
+
+  validation checkQty on save { create; update; field PartId, SiteId, PoQty, DeliveredQty; }
+
+  action receiveRemaining result [1] $self;
+
+  mapping for zdelivery
+  {
+    DeliveryId   = delivery_id;
+    PartId       = part_id;
+    SiteId       = site_id;
+    PoNumber     = po_number;
+    PoQty        = po_qty;
+    DeliveredQty = delivered_qty;
+    DeliveredAt  = delivered_at;
+  }
+}

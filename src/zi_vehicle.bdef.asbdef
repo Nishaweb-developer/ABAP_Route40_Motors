@@ -1,0 +1,22 @@
+managed implementation in class zbp_i_vehicle unique;
+strict(2);
+
+define behavior for ZI_Vehicle alias Vehicle
+persistent table zvehicle
+lock master
+authorization master ( global,instance )
+{
+  mapping for zvehicle
+    {
+      VehicleId  = vehicle_id;
+      PlateNo    = plate_no;
+      Model      = model;
+      MakeYear   = make_year;
+      OwnerName  = owner_name;
+      OwnerPhone = owner_phone;
+    }
+
+  create;
+
+  field ( readonly ) VehicleId;
+}

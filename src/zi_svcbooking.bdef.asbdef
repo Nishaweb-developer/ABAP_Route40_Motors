@@ -1,0 +1,35 @@
+managed implementation in class zbp_i_svcbooking unique;
+strict ( 2 );
+
+define behavior for ZI_SvcBooking alias SvcBooking
+persistent table zsvcbooking
+lock master
+authorization master ( instance,global )
+{
+  create;
+  update;
+  delete;
+
+  association _Vehicle;
+  association _SparePart;
+  association _Site;
+  association _Technician;
+
+  field ( mandatory : create ) BookingId;
+  field ( readonly : update )  BookingId;
+
+  validation checkStock on save { create; field PartId, SiteId; }
+
+  mapping for zsvcbooking
+  {
+    BookingId = booking_id;
+    VehicleId = vehicle_id;
+    PartId    = part_id;
+    SvcDate   = svc_date;
+    SvcType   = svc_type;
+    Status    = status;
+    DueDate   = due_date;
+    SiteId    = site_id;
+    TechId    = tech_id;
+  }
+}

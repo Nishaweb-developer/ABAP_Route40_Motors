@@ -1,0 +1,10 @@
+@EndUserText.label: 'Route 40 Motors Service Booking'
+define service ZSD_SVCBOOKING {
+  expose ZC_SvcBooking as SvcBooking;
+  expose ZC_Vehicle    as Vehicle;
+  expose ZC_Site       as Site;
+  expose ZC_SparePart  as SparePart;
+  expose ZC_Technician as Technician;
+  expose ZC_Delivery   as Delivery;
+  expose ZC_SaudiBand  as SaudiBand;
+}

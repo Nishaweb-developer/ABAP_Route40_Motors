@@ -1,0 +1,24 @@
+managed implementation in class zbp_i_sparepart unique;
+strict(2);
+
+define behavior for ZI_SparePart alias SparePart
+persistent table zsparepart
+lock master
+authorization master ( instance )
+{
+  create;
+  update;
+  delete;
+
+  field ( readonly : update ) PartId, SiteId;
+
+  mapping for zsparepart
+  {
+    PartId    = part_id;
+    SiteId    = site_id;
+    PartName  = part_name;
+    QtyStock  = qty_stock;
+    UnitPrice = unit_price;
+    Waers     = waers;
+  }
+}

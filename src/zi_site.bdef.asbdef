@@ -1,0 +1,10 @@
+managed implementation in class zbp_i_site unique;
+strict(2);
+
+define behavior for ZI_Site alias Site
+persistent table zsite
+lock master
+authorization master ( instance )
+{
+create;
+}

@@ -1,0 +1,34 @@
+{
+  "formatVersion": "2",
+  "header": {
+    "description": "{{appDescription}}",
+    "originalLanguage": "en",
+    "abapLanguageVersion": "cloudDevelopment"
+  },
+  "generalInformation": {
+    "appType": "ui5",
+    "catalogId": "SAP_TC_UI5_REPO_UIAD",
+    "targetMappingTitle": "Route 40 Motors - Service Bookings"
+  },
+  "ui5AppDetails": {
+    "appId": "nisha"
+  },
+  "navigation": {
+    "targetMappingId": "ZR40MOTORS_APP_UI5R_TM",
+    "semanticObject": "RouteFortyMotors",
+    "action": "manage",
+    "desktop": true,
+    "tablet": true,
+    "phone": true
+  },
+  "tiles": [
+    {
+      "id": "ZR40MOTORS_APP_UI5R_AL",
+      "tileType": "static",
+      "isDefault": true,
+      "standard": {
+        "title": "Route 40 Motors - Service Bookings"
+      }
+    }
+  ]
+}

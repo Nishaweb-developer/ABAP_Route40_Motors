@@ -1,0 +1,23 @@
+managed implementation in class zbp_i_technician unique;
+strict ( 2 );
+
+define behavior for ZI_TECHNICIAN alias Technician
+persistent table ztechnician
+lock master
+authorization master ( global, instance )
+{
+  create;
+  update;
+  delete;
+
+  field ( readonly : update ) TechId;
+
+  mapping for ztechnician
+  {
+    TechId      = tech_id;
+    Name        = name;
+    Nationality = nationality;
+    Department  = department;
+    JoinDate    = join_date;
+  }
+}

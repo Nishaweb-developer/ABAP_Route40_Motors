@@ -1,0 +1,70 @@
+@Metadata.layer: #CORE
+
+@UI.headerInfo: {
+  typeName: 'Delivery',
+  typeNamePlural: 'Deliveries',
+  title: { type: #STANDARD, value: 'DeliveryId' }
+}
+
+annotate entity ZC_Delivery with
+{
+  @UI.facet: [
+    {
+      id: 'General',
+      purpose: #STANDARD,
+      type: #IDENTIFICATION_REFERENCE,
+      label: 'Delivery Details',
+      position: 10
+    }
+  ]
+
+  @EndUserText.label: 'Delivery'
+  @UI: {
+    lineItem: [
+      { position: 10, importance: #HIGH },
+      { type: #FOR_ACTION, dataAction: 'receiveRemaining', label: 'Receive Remaining' }
+    ],
+    identification: [
+      { position: 10 },
+      { type: #FOR_ACTION, dataAction: 'receiveRemaining', label: 'Receive Remaining' }
+    ]
+  }
+  DeliveryId;
+
+  @EndUserText.label: 'Part'
+  @Consumption.valueHelpDefinition: [
+    {
+      entity: { name: 'ZC_SparePart', element: 'PartId' },
+      additionalBinding: [ { localElement: 'SiteId', element: 'SiteId', usage: #FILTER } ]
+    }
+  ]
+  @UI: { lineItem: [ { position: 20, importance: #HIGH } ], identification: [ { position: 20 } ] }
+  PartId;
+
+  @EndUserText.label: 'Site'
+  @Consumption.valueHelpDefinition: [
+    { entity: { name: 'ZC_Site', element: 'SiteId' } }
+  ]
+  @UI: { lineItem: [ { position: 30, importance: #HIGH } ], identification: [ { position: 30 } ] }
+  SiteId;
+
+  @EndUserText.label: 'PO Number'
+  @UI: { lineItem: [ { position: 40 } ], identification: [ { position: 40 } ] }
+  PoNumber;
+
+  @EndUserText.label: 'PO Quantity'
+  @UI: { lineItem: [ { position: 50 } ], identification: [ { position: 50 } ] }
+  PoQty;
+
+  @EndUserText.label: 'Delivered Quantity'
+  @UI: { lineItem: [ { position: 60 } ], identification: [ { position: 60 } ] }
+  DeliveredQty;
+
+  @EndUserText.label: 'Open Quantity'
+  @UI: { lineItem: [ { position: 70, importance: #HIGH } ], identification: [ { position: 70 } ] }
+  OpenQty;
+
+  @EndUserText.label: 'Delivered On'
+  @UI: { lineItem: [ { position: 80 } ], identification: [ { position: 80 } ] }
+  DeliveredAt;
+}

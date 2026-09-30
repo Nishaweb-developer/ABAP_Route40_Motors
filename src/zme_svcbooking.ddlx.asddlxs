@@ -1,0 +1,139 @@
+@Metadata.layer: #CORE
+
+@UI.headerInfo: {
+  typeName: 'Service Booking',
+  typeNamePlural: 'Service Bookings',
+  title:       { type: #STANDARD, value: 'BookingId' },
+  description: { type: #STANDARD, value: 'SvcType' }
+}
+
+annotate entity ZC_SvcBooking with
+{
+  @UI.facet: [
+    {
+      id: 'General',
+      purpose: #STANDARD,
+      type: #IDENTIFICATION_REFERENCE,
+      label: 'Booking Details',
+      position: 10
+    },
+    {
+      id: 'VehicleParts',
+      purpose: #STANDARD,
+      type: #FIELDGROUP_REFERENCE,
+      label: 'Vehicle & Parts',
+      targetQualifier: 'VehicleParts',
+      position: 20
+    }
+  ]
+
+  @EndUserText.label: 'Booking ID'
+  @UI: {
+    lineItem: [ { position: 10, importance: #HIGH } ],
+    identification: [ { position: 10 } ]
+  }
+  BookingId;
+
+  @EndUserText.label: 'Vehicle'
+  @Consumption.valueHelpDefinition: [
+    { entity: { name: 'ZC_Vehicle', element: 'VehicleId' } }
+  ]
+  @UI: {
+    lineItem: [ { position: 20, importance: #HIGH } ],
+    identification: [ { position: 20 } ],
+    fieldGroup: [ { qualifier: 'VehicleParts', position: 10 } ]
+  }
+  VehicleId;
+
+  @EndUserText.label: 'Vehicle Plate'
+  @UI.lineItem: [ { position: 21, importance: #HIGH } ]
+  PlateNo;
+
+  @EndUserText.label: 'Vehicle Model'
+  @UI.lineItem: [ { position: 22, importance: #MEDIUM } ]
+  VehicleModel;
+
+  @EndUserText.label: 'Part'
+  @Consumption.valueHelpDefinition: [
+    {
+      entity: { name: 'ZC_SparePart', element: 'PartId' },
+      additionalBinding: [
+        { localElement: 'SiteId', element: 'SiteId', usage: #FILTER }
+      ]
+    }
+  ]
+  @UI: {
+    lineItem: [ { position: 30, importance: #MEDIUM } ],
+    identification: [ { position: 30 } ],
+    fieldGroup: [ { qualifier: 'VehicleParts', position: 20 } ]
+  }
+  PartId;
+
+  @EndUserText.label: 'Part Name'
+  @UI.lineItem: [ { position: 31, importance: #MEDIUM } ]
+  PartName;
+
+  @EndUserText.label: 'Site'
+  @Consumption.valueHelpDefinition: [
+    { entity: { name: 'ZC_Site', element: 'SiteId' } }
+  ]
+  @UI: {
+    lineItem: [ { position: 40, importance: #MEDIUM } ],
+    identification: [ { position: 40 } ],
+    fieldGroup: [ { qualifier: 'VehicleParts', position: 30 } ]
+  }
+  SiteId;
+
+  @EndUserText.label: 'Site City'
+  @UI.lineItem: [ { position: 41, importance: #MEDIUM } ]
+  SiteCity;
+
+  @EndUserText.label: 'Service Type'
+  @UI: {
+    lineItem: [ { position: 50 } ],
+    identification: [ { position: 50 } ]
+  }
+  SvcType;
+
+  @EndUserText.label: 'Service Date'
+  @UI: {
+    lineItem: [ { position: 60 } ],
+    identification: [ { position: 60 } ]
+  }
+  SvcDate;
+
+  @EndUserText.label: 'Due Date'
+  @UI: {
+    lineItem: [ { position: 70 } ],
+    identification: [ { position: 70 } ]
+  }
+  DueDate;
+
+  @EndUserText.label: 'Status'
+  @UI: {
+    lineItem: [ { position: 80, importance: #HIGH, criticality: 'StatusCriticality' } ],
+    identification: [ { position: 80, criticality: 'StatusCriticality' } ]
+  }
+  StatusText;
+
+  @EndUserText.label: 'Technician'
+  @Consumption.valueHelpDefinition: [
+    { entity: { name: 'ZC_Technician', element: 'TechId' } }
+  ]
+  @UI: {
+    lineItem: [ { position: 90 } ],
+    identification: [ { position: 90 } ],
+    fieldGroup: [ { qualifier: 'VehicleParts', position: 40 } ]
+  }
+  TechId;
+
+  @EndUserText.label: 'Technician Name'
+  @UI.lineItem: [ { position: 91 } ]
+  TechnicianName;
+
+  @UI.hidden: true
+  StatusCriticality;
+
+  @UI.hidden: true
+  Status;
+}

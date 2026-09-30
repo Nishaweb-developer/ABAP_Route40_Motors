@@ -1,0 +1,19 @@
+@Metadata.layer: #CUSTOMER
+@UI.headerInfo: { typeName: 'Department', typeNamePlural: 'Saudization by Department' }
+annotate view ZC_SaudiBand with
+{
+  @UI.lineItem: [{ position: 10, label: 'Department' }]
+  Department;
+
+  @UI.lineItem: [{ position: 20, label: 'Technicians' }]
+  TotalTechs;
+
+  @UI.lineItem: [{ position: 30, label: 'Saudi' }]
+  SaudiTechs;
+
+  @UI.lineItem: [{ position: 40, label: 'Saudization %' }]
+  SaudiPct;
+
+  @UI.lineItem: [{ position: 50, label: 'Band', criticality: 'BandCriticality' }]
+  Band;
+}
