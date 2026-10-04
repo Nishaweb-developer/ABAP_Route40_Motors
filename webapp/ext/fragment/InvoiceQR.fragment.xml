@@ -1,0 +1,7 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core"
+    xmlns:qr="zr40.project1.control">
+  <VBox id="invoiceQrBox" class="sapUiSmallMargin">
+    <Label id="invoiceQrLabel" text="ZATCA QR (scan to read invoice data)" />
+    <qr:QRCode id="invoiceQrCode" bookingId="{BookingId}" cellSize="5" />
+  </VBox>
+</core:FragmentDefinition>
