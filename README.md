@@ -8,13 +8,13 @@ A customer's vehicle is booked for service. Each booking reserves a spare part a
 
 > All sample data in this repository is fictional. This is a learning and portfolio project, **not** a certified e-invoicing solution (see [Scope and limitations](#scope-and-limitations)).
 
-**Author:** Sharfunisa Shajahan · [GitHub](https://github.com/Nishaweb-developer)
+**Author:** Sharfunisa Shajahan · [GitHub](https://github.com/Nishaweb-developer) 
 
 ## Demo video (2 minutes)
 
-[![Watch the 2-minute demo on YouTube](https://img.youtube.com/vi/lQaUPmhekk0/maxresdefault.jpg)](https://youtu.be/lQaUPmhekk0)
+[![Watch the 2-minute demo on YouTube](https://img.youtube.com/vi/lQaUPmhekk0/maxresdefault.jpg)](https://youtu.be/Lkluje2rYjA)
 
-[Watch on YouTube](https://youtu.be/lQaUPmhekk0): a booking blocked for no stock, **Complete Service** deducting stock and issuing an invoice, the ZATCA-style QR drawn on the Fiori page, and a delivery refilling stock.
+[Watch on YouTube](https://youtu.be/Lkluje2rYjA): a booking blocked for no stock, **Complete Service** deducting stock and issuing an invoice, the ZATCA-style QR drawn on the Fiori page, and a delivery refilling stock.
 
 ---
 
