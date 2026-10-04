@@ -8,17 +8,24 @@ A customer's vehicle is booked for service. Each booking reserves a spare part a
 
 > All sample data in this repository is fictional. This is a learning and portfolio project, **not** a certified e-invoicing solution (see [Scope and limitations](#scope-and-limitations)).
 
-**Author:** Sharfunisa Shajahan · [GitHub](https://github.com/Nishaweb-developer) · [Portfolio](https://nishaweb-developer.github.io/myworks)
+**Author:** Sharfunisa Shajahan · [GitHub](https://github.com/Nishaweb-developer)
+
+## Demo video (2 minutes)
+
+[![Watch the 2-minute demo on YouTube](https://img.youtube.com/vi/lQaUPmhekk0/maxresdefault.jpg)](https://youtu.be/lQaUPmhekk0)
+
+[Watch on YouTube](https://youtu.be/lQaUPmhekk0): a booking blocked for no stock, **Complete Service** deducting stock and issuing an invoice, the ZATCA-style QR drawn on the Fiori page, and a delivery refilling stock.
 
 ---
 
 ## Table of contents
 
-1. [What it does](#what-it-does)
-2. [Architecture](#architecture)
-3. [Repository structure](#repository-structure)
-4. [Data model](#data-model)
-5. [Feature deep dives](#feature-deep-dives)
+1. [Demo video](#demo-video-2-minutes)
+2. [What it does](#what-it-does)
+3. [Architecture](#architecture)
+4. [Repository structure](#repository-structure)
+5. [Data model](#data-model)
+6. [Feature deep dives](#feature-deep-dives)
    - [Service bookings and stock validation](#1-service-bookings-and-stock-validation)
    - [Input normalisation](#2-input-normalisation)
    - [Complete Service action](#3-complete-service-action)
@@ -26,15 +33,15 @@ A customer's vehicle is booked for service. Each booking reserves a spare part a
    - [Fiori app with a custom QR section](#5-fiori-app-with-a-custom-qr-section)
    - [Deliveries](#6-deliveries)
    - [Saudization report](#7-saudization-report)
-6. [OData services](#odata-services)
-7. [Tech stack](#tech-stack)
-8. [Run it yourself](#run-it-yourself)
-9. [Testing](#testing)
-10. [Lessons learned](#lessons-learned)
-11. [Troubleshooting](#troubleshooting)
-12. [Scope and limitations](#scope-and-limitations)
-13. [Roadmap](#roadmap)
-14. [Credits and license](#credits-and-license)
+7. [OData services](#odata-services)
+8. [Tech stack](#tech-stack)
+9. [Run it yourself](#run-it-yourself)
+10. [Testing](#testing)
+11. [Lessons learned](#lessons-learned)
+12. [Troubleshooting](#troubleshooting)
+13. [Scope and limitations](#scope-and-limitations)
+14. [Roadmap](#roadmap)
+15. [Credits and license](#credits-and-license)
 
 ---
 
@@ -226,6 +233,10 @@ Guard rails in action:
 |---|---|
 | ![](screenshots/14-complete-service-already-completed.png) | ![](screenshots/15-stock-before-after.png) |
 
+The database confirms it: the booking moves from status 0 to 3, and one unit leaves stock.
+
+![Booking status before and after](screenshots/23-booking-status-before-after.png)
+
 ### 4. ZATCA-style invoice and QR text
 
 Saudi Arabia's e-invoicing authority, **ZATCA**, defines a QR code for simplified invoices. In its Phase 1 form the QR carries five fields encoded as **TLV** (tag, length, value), then Base64.
@@ -281,6 +292,8 @@ Fiori Elements apps are generated from annotations and have no QR control, so th
 - **Library:** `libs/qrcode.js` is the MIT-licensed *qrcode-generator* by Kazuhiko Arase. It is **bundled in the app and loaded on demand**, not pulled from a CDN, because the launchpad's content security policy can block outside scripts. The QR uses automatic size and error-correction level M.
 
 The QR encodes the **Base64 text itself**, not the decoded invoice data. That is the form ZATCA readers expect.
+
+> The QR appears in the **custom app**, not in the preview you open from the service binding in ADT. The preview is generated from annotations only and does not load the extension.
 
 | Object page with QR | Scanning with a phone |
 |---|---|
@@ -440,6 +453,7 @@ These are real problems hit while building the invoice feature.
 ## Scope and limitations
 
 - **Phase 1 style only.** The QR follows ZATCA's Phase 1 TLV layout. This project does **not** produce signed UBL XML, cryptographic stamps, or Fatoora clearance and reporting calls, all of which Phase 2 requires. The seller VAT number is a demo value. Do not use this to issue real invoices.
+- **Booking IDs are not normalised.** Only part and site are upper-cased on save, so `b028` and `B028` would be two different bookings.
 - **One invoice per booking.** The invoice ID is `INV-` plus the booking ID and the key field is `CHAR 10`, so booking IDs longer than six characters would be truncated.
 - **One unit per completion.** *Complete Service* deducts exactly one unit. If several bookings sharing a part and site are completed in a single call, the second stock read can be stale. The Fiori buttons complete one booking at a time.
 - **Authorizations are permissive.** Global authorizations allow create, update and delete. Real roles are not modelled yet.
