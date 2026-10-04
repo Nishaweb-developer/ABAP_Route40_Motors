@@ -12,7 +12,7 @@ A customer's vehicle is booked for service. Each booking reserves a spare part a
 
 ## Demo video (2 minutes)
 
-[![Watch the 2-minute demo on YouTube](https://img.youtube.com/vi/lQaUPmhekk0/maxresdefault.jpg)](https://youtu.be/Lkluje2rYjA)
+[![Watch the 2-minute demo on YouTube](https://youtu.be/Lkluje2rYjA)
 
 [Watch on YouTube](https://youtu.be/Lkluje2rYjA): a booking blocked for no stock, **Complete Service** deducting stock and issuing an invoice, the ZATCA-style QR drawn on the Fiori page, and a delivery refilling stock.
 
