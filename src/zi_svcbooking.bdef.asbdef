@@ -20,6 +20,10 @@ authorization master ( instance,global )
 
   validation checkStock on save { create; field PartId, SiteId; }
 
+  determination normalizeKeys on modify { create; field PartId, SiteId; }
+
+  action completeService result [1] $self;
+
   mapping for zsvcbooking
   {
     BookingId = booking_id;

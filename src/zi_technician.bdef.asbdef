@@ -12,6 +12,8 @@ authorization master ( global, instance )
 
   field ( readonly : update ) TechId;
 
+    determination normalizeTech on modify { create; field Department, Nationality; }
+
   mapping for ztechnician
   {
     TechId      = tech_id;

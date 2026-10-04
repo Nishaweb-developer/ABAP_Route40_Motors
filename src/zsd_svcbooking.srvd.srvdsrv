@@ -7,4 +7,5 @@ define service ZSD_SVCBOOKING {
   expose ZC_Technician as Technician;
   expose ZC_Delivery   as Delivery;
   expose ZC_SaudiBand  as SaudiBand;
+  expose ZI_INVOICE    as Invoice;
 }

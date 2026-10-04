@@ -4,6 +4,12 @@
 define root view entity ZI_SVCBOOKING
   as select from zsvcbooking
 
+   association [0..1] to ZI_INVOICE_QR as _InvoiceQr
+    on _InvoiceQr.BookingId = $projection.BookingId
+    
+    association [0..1] to ZI_Invoice as _Invoice
+  on $projection.BookingId = _Invoice.BookingId
+
   association [0..1] to ZI_Vehicle
     as _Vehicle
     on $projection.VehicleId = _Vehicle.VehicleId
@@ -24,7 +30,10 @@ define root view entity ZI_SVCBOOKING
 {
   key booking_id as BookingId,
 
+    
+      
       vehicle_id  as VehicleId,
+      
       part_id     as PartId,
       svc_date    as SvcDate,
       svc_type    as SvcType,
@@ -32,6 +41,7 @@ define root view entity ZI_SVCBOOKING
       due_date    as DueDate,
       site_id     as SiteId,
       tech_id     as TechId,
+      
 
       cast(
         case status
@@ -58,5 +68,6 @@ define root view entity ZI_SVCBOOKING
       _Vehicle,
       _Site,
       _Technician,
-      _SparePart
+      _SparePart,
+      _Invoice
 }

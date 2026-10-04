@@ -27,11 +27,18 @@ annotate entity ZC_SvcBooking with
     }
   ]
 
-  @EndUserText.label: 'Booking ID'
+    @EndUserText.label: 'Booking ID'
   @UI: {
-    lineItem: [ { position: 10, importance: #HIGH } ],
-    identification: [ { position: 10 } ]
+    lineItem: [
+      { position: 10, importance: #HIGH },
+      { type: #FOR_ACTION, dataAction: 'completeService', label: 'Complete Service' }
+    ],
+    identification: [
+      { position: 10 },
+      { type: #FOR_ACTION, dataAction: 'completeService', label: 'Complete Service' }
+    ]
   }
+  
   BookingId;
 
   @EndUserText.label: 'Vehicle'

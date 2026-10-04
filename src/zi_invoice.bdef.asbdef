@@ -1,0 +1,27 @@
+managed implementation in class zbp_i_invoice unique;
+
+strict ( 2 );
+
+define behavior for ZI_INVOICE alias Invoice
+persistent table zinvoice
+lock master
+authorization master ( instance, global )
+{
+ create;
+update;
+delete;
+
+field ( mandatory : create, readonly : update ) InvoiceId;
+  mapping for zinvoice
+  {
+    InvoiceId    = invoice_id;
+    BookingId    = booking_id;
+    SellerName   = seller_name;
+    VatNumber    = vat_number;
+    InvoiceDate  = invoice_date;
+    TotalAmount  = total_amount;
+    VatAmount    = vat_amount;
+    Waers        = waers;
+    QrTlv        = qr_tlv;
+  }
+}
