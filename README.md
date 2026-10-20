@@ -102,11 +102,22 @@ The *Complete Service* action finishes a booking and writes an invoice to `ZINVO
 
 The QR text is built by `ZCL_ZATCA_TLV` as a TLV structure (tag, length, value) and then Base64-encoded. The tags hold seller name, VAT registration number, timestamp, invoice total and VAT amount. The booking object page then draws the QR picture in a custom section (`InvoiceQR`) built with QRCode.js in an SAP Business Application Studio Fiori project.
 
-![Invoice QR on the booking object page](screenshots/13-invoice-qr.png)
+![Invoice QR on the booking object page](screenshots/18-qr-object-page.png)
+
+**Complete Service in action**
+
+| What happens | Evidence |
+|---|---|
+| Booking B008 completed (status 0 to 3) | ![Complete Service success](screenshots/13-complete-service-success.png) |
+| Stock of the part drops by one | ![Stock before and after](screenshots/15-stock-before-after.png) |
+| Status changes in the database | ![Status before and after](screenshots/23-booking-status-before-after.png) |
+| Invoice row with the QR text in `ZINVOICE` | ![Invoice table](screenshots/16-invoice-table.png) |
 
 A booking can only be completed once. Trying again shows *Booking is already completed* and no second invoice is created.
 
 ![Already completed guard](screenshots/12-already-completed-guard.png)
+
+![Booking is already completed](screenshots/14-complete-service-already-completed.png)
 
 **Scope:** this is a ZATCA-style QR for demonstration. It shows how the TLV format works and how to render it in Fiori. It does not submit invoices to any tax authority, and the seller and VAT numbers in the sample data are fictional.
 
@@ -138,6 +149,8 @@ It is built as three stacked CDS view entities (counts, percentage, band), proje
 - OData V2 service definition and binding (UI)
 - SAP Fiori Elements (list report and object page) with a custom section
 - ABAP Unit (TLV class)
+- TLV and Base64 with the XCO library (`xco_cp`) and `cl_web_http_utility`
+- QRCode.js (custom Fiori section)
 - ABAP Development Tools (Eclipse), SAP Business Application Studio, abapGit
 
 ## Run it yourself
@@ -149,7 +162,7 @@ It is built as three stacked CDS view entities (counts, percentage, band), proje
 
 ## Known limitations
 
-- The stock check validates but does not reduce stock, so a booking does not deduct quantity yet.
+- Stock is reduced by one when a service is completed, but there is no locking yet, so two users could take the last part at the same time.
 - No authorization checks or draft handling yet.
 - Saudization bands are illustrative (see above).
 - The invoice QR is for demonstration only (see scope note above).
@@ -163,7 +176,8 @@ The order is deliberate: finish and test the core application first, then integr
 - [x] Upper-case input normalisation
 - [x] Complete Service action with invoice and TLV QR
 - [x] ABAP Unit test for the TLV class
-- [ ] Stock deduction on booking, with locking so two users cannot take the last part
+- [x] Stock deduction when a service is completed
+- [ ] Locking so two users cannot take the last part
 - [ ] Authorization (access control) and draft handling
 - [ ] ABAP Unit tests for `checkStock` and Complete Service
 - [ ] Technician assignment warning when a hire would lower a department's Saudization ratio
