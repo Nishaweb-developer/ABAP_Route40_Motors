@@ -121,21 +121,21 @@ This part of the project uses an LLM to summarize service bookings and draft cus
 3. Retries automatically when Gemini is busy (`503`), waiting longer each time.
 4. Runs checks on each answer and prints PASS or FAIL.
 
-![Python prototype first run](route40-ai-assistant/screenshots/01-python-prototype-first-run.png)
+![Python prototype first run](screenshots/01-python-prototype-first-run.png)
 
 *First run of `summarize.py`: a status summary, a reminder when needed, and PASS/FAIL checks for each booking.*
 
 ### The ABAP side
 
-![Booking list with the AI summary field empty](route40-ai-assistant/screenshots/02-fiori-booking-list-ai-summary-empty.png)
+![Booking list with the AI summary field empty](screenshots/02-fiori-booking-list-ai-summary-empty.png)
 
 *The booking list loads. The AI summary field is empty because the action has not run successfully yet.*
 
-![Booking object page with Generate AI Summary button](route40-ai-assistant/screenshots/03-fiori-object-page-generate-ai-summary-button.png)
+![Booking object page with Generate AI Summary button](screenshots/03-fiori-object-page-generate-ai-summary-button.png)
 
 *The object page shows Generate AI Summary next to Complete Service.*
 
-![GEMINI_API destination in the destination service instance](route40-ai-assistant/screenshots/06-btp-destination-gemini-api.png)
+![GEMINI_API destination in the destination service instance](screenshots/06-btp-destination-gemini-api.png)
 
 *The HTTP destination `GEMINI_API` in the destination service instance used by the ABAP environment.*
 
@@ -159,19 +159,19 @@ The ABAP class `ZCL_AI_SUMMARY` calls Gemini through the destination `GEMINI_API
 | Destination service instance binding | `Bound Applications (0)`; no binding is possible from this screen |
 | Communication arrangement SAP_COM_0276 | App not visible to the trial user; needs the ABAP business role |
 
-![ABAP console reports Destination not found](route40-ai-assistant/screenshots/05-limitation-abap-console-destination-not-found.png)
+![ABAP console reports Destination not found](screenshots/05-limitation-abap-console-destination-not-found.png)
 
 *The console test returns `Destination not found`, although `GEMINI_API` exists in the destination service instance.*
 
-![Debugger shows CX_A4C_DESTINATION_NOT_FOUND](route40-ai-assistant/screenshots/04-limitation-abap-debugger-destination-provider-error.png)
+![Debugger shows CX_A4C_DESTINATION_NOT_FOUND](screenshots/04-limitation-abap-debugger-destination-provider-error.png)
 
 *In the debugger, the error is `CX_HTTP_DEST_PROVIDER_ERROR` caused by `CX_A4C_DESTINATION_NOT_FOUND`. The Gemini call never starts.*
 
-![Destination service instance with zero bound applications](route40-ai-assistant/screenshots/07-limitation-destination-service-zero-bound-applications.png)
+![Destination service instance with zero bound applications](screenshots/07-limitation-destination-service-zero-bound-applications.png)
 
 *The destination service instance shows `Bound Applications (0)`.*
 
-![BTP role collection SAP_BR_ADMINISTRATOR](route40-ai-assistant/screenshots/08-limitation-btp-role-collection-sap-br-administrator.png)
+![BTP role collection SAP_BR_ADMINISTRATOR](screenshots/08-limitation-btp-role-collection-sap-br-administrator.png)
 
 *The BTP role collection contains cockpit, destination, and Business Application Studio roles. It does not contain the ABAP business catalog that exposes the Communication Arrangements app. That role has to be assigned inside the ABAP system, which the trial user cannot reach.*
 
