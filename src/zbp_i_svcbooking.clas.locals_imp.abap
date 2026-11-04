@@ -10,16 +10,28 @@ CLASS lhc_SvcBooking DEFINITION INHERITING FROM cl_abap_behavior_handler.
     METHODS checkStock FOR VALIDATE ON SAVE
       IMPORTING keys FOR SvcBooking~checkStock.
 
+          METHODS generateAiSummary FOR MODIFY
+      IMPORTING keys FOR ACTION SvcBooking~generateAiSummary RESULT result.
+
     METHODS normalizeKeys FOR DETERMINE ON MODIFY
       IMPORTING keys FOR SvcBooking~normalizeKeys.
 
     METHODS completeService FOR MODIFY
       IMPORTING keys FOR ACTION SvcBooking~completeService RESULT result.
 
+    METHODS get_instance_features FOR INSTANCE FEATURES
+      IMPORTING keys REQUEST requested_features FOR SvcBooking RESULT result.
 
 ENDCLASS.
 
 CLASS lhc_SvcBooking IMPLEMENTATION.
+
+  METHOD get_instance_features.
+    " Enable the AI button for every booking
+    result = VALUE #( FOR key IN keys
+                      ( %tky                    = key-%tky
+                        %action-generateAiSummary = if_abap_behv=>fc-o-enabled ) ).
+  ENDMETHOD.
 
     METHOD completeService.
     READ ENTITIES OF zi_svcbooking IN LOCAL MODE
@@ -182,6 +194,49 @@ CLASS lhc_SvcBooking IMPLEMENTATION.
       ENDIF.
     ENDLOOP.
   ENDMETHOD.
+
+ METHOD generateAiSummary.
+
+  " Read all fields for the selected bookings
+  READ ENTITIES OF zi_svcbooking IN LOCAL MODE
+    ENTITY SvcBooking
+      ALL FIELDS WITH CORRESPONDING #( keys )
+    RESULT DATA(lt_bookings).
+
+  LOOP AT lt_bookings INTO DATA(ls_booking).
+
+    DATA(ls_input) = VALUE zcl_ai_summary=>ty_booking(
+      booking_id   = ls_booking-BookingId
+      service_type = ls_booking-SvcType
+      status_text  = ls_booking-StatusText
+      due_date     = |{ ls_booking-DueDate }| ).
+
+    DATA(lv_summary) = VALUE string( ).
+    TRY.
+        lv_summary = zcl_ai_summary=>summarize( ls_input ).
+      CATCH cx_root INTO DATA(lx_error).
+        lv_summary = |AI summary failed: { lx_error->get_text( ) }|.
+    ENDTRY.
+
+    MODIFY ENTITIES OF zi_svcbooking IN LOCAL MODE
+      ENTITY SvcBooking
+        UPDATE FIELDS ( AISUMMARY )
+        WITH VALUE #( ( %tky = ls_booking-%tky
+                        AISUMMARY = lv_summary ) ).
+
+  ENDLOOP.
+
+  " Return the updated rows to the Fiori app
+  READ ENTITIES OF zi_svcbooking IN LOCAL MODE
+    ENTITY SvcBooking
+      ALL FIELDS WITH CORRESPONDING #( keys )
+    RESULT DATA(lt_result).
+
+  result = VALUE #( FOR ls_row IN lt_result
+                    ( %tky  = ls_row-%tky
+                      %param = ls_row ) ).
+
+ENDMETHOD.
 
   METHOD normalizeKeys.
     READ ENTITIES OF zi_svcbooking IN LOCAL MODE

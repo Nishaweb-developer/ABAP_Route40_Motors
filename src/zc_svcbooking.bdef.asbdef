@@ -8,6 +8,7 @@ define behavior for ZC_SvcBooking alias SvcBooking
   use update;
   use delete;
   use action completeService;
+  use action generateAiSummary;
 
   use association _Vehicle;
   use association _SparePart;

@@ -24,6 +24,8 @@ authorization master ( instance,global )
 
   action completeService result [1] $self;
 
+  action ( features : instance ) generateAiSummary result [1] $self;
+
   mapping for zsvcbooking
   {
     BookingId = booking_id;

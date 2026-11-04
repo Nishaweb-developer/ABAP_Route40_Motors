@@ -35,6 +35,7 @@ define root view entity ZI_SVCBOOKING
       vehicle_id  as VehicleId,
       
       part_id     as PartId,
+      ai_summary  as AISUMMARY,
       svc_date    as SvcDate,
       svc_type    as SvcType,
       status      as Status,

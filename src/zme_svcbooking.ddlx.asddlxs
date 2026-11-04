@@ -7,8 +7,10 @@
   description: { type: #STANDARD, value: 'SvcType' }
 }
 
+
 annotate entity ZC_SvcBooking with
 {
+
   @UI.facet: [
     {
       id: 'General',
@@ -24,10 +26,18 @@ annotate entity ZC_SvcBooking with
       label: 'Vehicle & Parts',
       targetQualifier: 'VehicleParts',
       position: 20
+    },
+    {
+      id: 'AISUMMARY',
+      purpose: #STANDARD,
+      type: #FIELDGROUP_REFERENCE,
+      label: 'AI Summary',
+      targetQualifier: 'AISUMMARY',
+      position: 30
     }
   ]
 
-    @EndUserText.label: 'Booking ID'
+     @EndUserText.label: 'Booking ID'
   @UI: {
     lineItem: [
       { position: 10, importance: #HIGH },
@@ -35,11 +45,13 @@ annotate entity ZC_SvcBooking with
     ],
     identification: [
       { position: 10 },
-      { type: #FOR_ACTION, dataAction: 'completeService', label: 'Complete Service' }
+      { type: #FOR_ACTION, dataAction: 'completeService', label: 'Complete Service', position: 20 },
+      { type: #FOR_ACTION, dataAction: 'generateAiSummary', label: 'Generate AI Summary', position: 30 }
     ]
   }
-  
   BookingId;
+  
+  
 
   @EndUserText.label: 'Vehicle'
   @Consumption.valueHelpDefinition: [
@@ -123,6 +135,14 @@ annotate entity ZC_SvcBooking with
   }
   StatusText;
 
+
+      @EndUserText.label: 'AI Summary'
+  @UI: {
+    fieldGroup: [ { qualifier: 'AISUMMARY', position: 10 } ],
+    lineItem:   [ { position: 100 } ]
+  }
+  AISUMMARY;
+  
   @EndUserText.label: 'Technician'
   @Consumption.valueHelpDefinition: [
     { entity: { name: 'ZC_Technician', element: 'TechId' } }

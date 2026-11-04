@@ -18,7 +18,7 @@ define root view entity ZC_SvcBooking
       SvcType,
       SvcDate,
       DueDate,
-
+      AISUMMARY,
       Status,
       StatusText,
       StatusCriticality,
