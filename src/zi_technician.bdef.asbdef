@@ -13,6 +13,7 @@ authorization master ( global, instance )
   field ( readonly : update ) TechId;
 
     determination normalizeTech on modify { create; field Department, Nationality; }
+      validation warnSaudization on save { create; }
 
   mapping for ztechnician
   {

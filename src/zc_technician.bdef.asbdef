@@ -3,5 +3,7 @@ strict ( 2 );
 
 define behavior for ZC_Technician alias Technician
 {
-
+  use create;
+  use update;
+  use delete;
 }

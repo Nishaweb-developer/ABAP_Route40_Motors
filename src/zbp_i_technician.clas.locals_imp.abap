@@ -10,9 +10,45 @@ CLASS lhc_Technician DEFINITION INHERITING FROM cl_abap_behavior_handler.
     METHODS normalizeTech FOR DETERMINE ON MODIFY
       IMPORTING keys FOR Technician~normalizeTech.
 
+          METHODS warnSaudization FOR VALIDATE ON SAVE
+      IMPORTING keys FOR Technician~warnSaudization.
+
 ENDCLASS.
 
 CLASS lhc_Technician IMPLEMENTATION.
+
+  METHOD warnSaudization.
+    READ ENTITIES OF zi_technician IN LOCAL MODE
+      ENTITY Technician
+        FIELDS ( Department Nationality )
+        WITH CORRESPONDING #( keys )
+      RESULT DATA(techs).
+
+    LOOP AT techs INTO DATA(t) WHERE Department IS NOT INITIAL.
+      SELECT COUNT( * ) FROM ztechnician
+        WHERE department = @t-Department
+        INTO @DATA(lv_total).
+      SELECT COUNT( * ) FROM ztechnician
+        WHERE department = @t-Department
+          AND nationality = 'SAUDI'
+        INTO @DATA(lv_saudi).
+      IF lv_total = 0.
+        CONTINUE.
+      ENDIF.
+
+      DATA(lv_new)    = COND i( WHEN t-Nationality = 'SAUDI' THEN 1 ELSE 0 ).
+      DATA(lv_before) = CONV decfloat34( lv_saudi ) * 100 / lv_total.
+      DATA(lv_after)  = CONV decfloat34( lv_saudi + lv_new ) * 100 / ( lv_total + 1 ).
+
+      IF zcl_saudi_band=>band_of( lv_after ) < zcl_saudi_band=>band_of( lv_before ).
+        APPEND VALUE #( %tky = t-%tky
+                        %msg = new_message_with_text(
+                                 severity = if_abap_behv_message=>severity-warning
+                                 text     = |This hire lowers { t-Department } from { lv_before DECIMALS = 1 }% to { lv_after DECIMALS = 1 }%| ) )
+          TO reported-technician.
+      ENDIF.
+    ENDLOOP.
+  ENDMETHOD.
 
   METHOD get_instance_authorizations.
   ENDMETHOD.

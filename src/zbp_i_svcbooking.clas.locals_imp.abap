@@ -10,26 +10,23 @@ CLASS lhc_SvcBooking DEFINITION INHERITING FROM cl_abap_behavior_handler.
     METHODS checkStock FOR VALIDATE ON SAVE
       IMPORTING keys FOR SvcBooking~checkStock.
 
-          METHODS generateAiSummary FOR MODIFY
-      IMPORTING keys FOR ACTION SvcBooking~generateAiSummary RESULT result.
-
     METHODS normalizeKeys FOR DETERMINE ON MODIFY
       IMPORTING keys FOR SvcBooking~normalizeKeys.
 
     METHODS completeService FOR MODIFY
       IMPORTING keys FOR ACTION SvcBooking~completeService RESULT result.
 
-    METHODS get_instance_features FOR INSTANCE FEATURES
+          METHODS get_instance_features FOR INSTANCE FEATURES
       IMPORTING keys REQUEST requested_features FOR SvcBooking RESULT result.
+
 
 ENDCLASS.
 
 CLASS lhc_SvcBooking IMPLEMENTATION.
 
   METHOD get_instance_features.
-    " Enable the AI button for every booking
     result = VALUE #( FOR key IN keys
-                      ( %tky                    = key-%tky
+                      ( %tky                      = key-%tky
                         %action-generateAiSummary = if_abap_behv=>fc-o-enabled ) ).
   ENDMETHOD.
 
@@ -39,6 +36,8 @@ CLASS lhc_SvcBooking IMPLEMENTATION.
         FIELDS ( BookingId PartId SiteId Status )
         WITH CORRESPONDING #( keys )
       RESULT DATA(bookings).
+
+          DATA(lo_stock) = NEW zcl_stock_service( ).
 
     LOOP AT bookings INTO DATA(b).
 
@@ -54,21 +53,19 @@ CLASS lhc_SvcBooking IMPLEMENTATION.
       ENDIF.
 
       " --- 2. stock and price in one select ---
-      SELECT SINGLE qty_stock, unit_price, waers
-        FROM zsparepart
-        WHERE part_id = @b-PartId
-          AND site_id = @b-SiteId
-        INTO @DATA(ls_part).
-
-      IF sy-subrc <> 0 OR ls_part-qty_stock < 1.
-        APPEND VALUE #( %tky = b-%tky ) TO failed-svcbooking.
-        APPEND VALUE #( %tky = b-%tky
-                        %msg = new_message_with_text(
-                                 severity = if_abap_behv_message=>severity-error
-                                 text     = 'Part is out of stock' ) )
-          TO reported-svcbooking.
-        CONTINUE.
-      ENDIF.
+          TRY.
+          DATA(ls_part) = lo_stock->get_available_part(
+                            iv_part_id = b-PartId
+                            iv_site_id = b-SiteId ).
+        CATCH zcx_route40 INTO DATA(lx_stock).
+          APPEND VALUE #( %tky = b-%tky ) TO failed-svcbooking.
+          APPEND VALUE #( %tky = b-%tky
+                          %msg = new_message_with_text(
+                                   severity = if_abap_behv_message=>severity-error
+                                   text     = lx_stock->mv_text ) )
+            TO reported-svcbooking.
+          CONTINUE.
+      ENDTRY.
 
       " --- 3. invoice already exists for this booking? ---
       DATA(lv_invoice_id) = CONV zinvoice-invoice_id( |INV-{ b-BookingId }| ).
@@ -80,20 +77,19 @@ CLASS lhc_SvcBooking IMPLEMENTATION.
         RESULT DATA(existing_inv).
 
       " --- 4. reduce stock ---
-      MODIFY ENTITIES OF zi_sparepart
+           MODIFY ENTITIES OF zi_sparepart
         ENTITY SparePart
-          UPDATE FIELDS ( QtyStock )
-          WITH VALUE #( ( PartId   = b-PartId
-                          SiteId   = b-SiteId
-                          QtyStock = ls_part-qty_stock - 1 ) )
-        FAILED DATA(sp_failed).
+          EXECUTE reserveOne
+          FROM VALUE #( ( PartId = b-PartId SiteId = b-SiteId ) )
+        FAILED DATA(sp_failed)
+        REPORTED DATA(sp_reported).
 
       IF sp_failed-sparepart IS NOT INITIAL.
         APPEND VALUE #( %tky = b-%tky ) TO failed-svcbooking.
         APPEND VALUE #( %tky = b-%tky
                         %msg = new_message_with_text(
                                  severity = if_abap_behv_message=>severity-error
-                                 text     = 'Stock update failed' ) )
+                                 text     = 'Part is locked by another user, please retry' ) )
           TO reported-svcbooking.
         CONTINUE.
       ENDIF.
@@ -164,79 +160,30 @@ CLASS lhc_SvcBooking IMPLEMENTATION.
     result-%delete = if_abap_behv=>auth-allowed.
   ENDMETHOD.
 
-  METHOD checkStock.
+    METHOD checkStock.
     READ ENTITIES OF zi_svcbooking IN LOCAL MODE
       ENTITY SvcBooking
         FIELDS ( PartId SiteId )
         WITH CORRESPONDING #( keys )
       RESULT DATA(bookings).
 
-    DATA qty TYPE zsparepart-qty_stock.
+    DATA(lo_stock) = NEW zcl_stock_service( ).
 
     LOOP AT bookings INTO DATA(booking).
-      CLEAR qty.
-      SELECT SINGLE qty_stock FROM zsparepart
-        WHERE part_id = @booking-PartId
-          AND site_id = @booking-SiteId
-        INTO @qty.
-
-      IF sy-subrc <> 0.
-        APPEND VALUE #( %tky = booking-%tky ) TO failed-svcbooking.
-        APPEND VALUE #( %tky = booking-%tky
-                        %msg = new_message_with_text(
-                                 text = |Part '{ booking-PartId }' not found for site '{ booking-SiteId }'| ) )
-          TO reported-svcbooking.
-      ELSEIF qty = 0.
-        APPEND VALUE #( %tky = booking-%tky ) TO failed-svcbooking.
-        APPEND VALUE #( %tky = booking-%tky
-                        %msg = new_message_with_text( text = 'Part is out of stock' ) )
-          TO reported-svcbooking.
-      ENDIF.
+      TRY.
+          lo_stock->get_available_part(
+            iv_part_id = booking-PartId
+            iv_site_id = booking-SiteId ).
+        CATCH zcx_route40 INTO DATA(lx_stock).
+          APPEND VALUE #( %tky = booking-%tky ) TO failed-svcbooking.
+          APPEND VALUE #( %tky = booking-%tky
+                          %msg = new_message_with_text(
+                                   severity = if_abap_behv_message=>severity-error
+                                   text     = lx_stock->mv_text ) )
+            TO reported-svcbooking.
+      ENDTRY.
     ENDLOOP.
   ENDMETHOD.
-
- METHOD generateAiSummary.
-
-  " Read all fields for the selected bookings
-  READ ENTITIES OF zi_svcbooking IN LOCAL MODE
-    ENTITY SvcBooking
-      ALL FIELDS WITH CORRESPONDING #( keys )
-    RESULT DATA(lt_bookings).
-
-  LOOP AT lt_bookings INTO DATA(ls_booking).
-
-    DATA(ls_input) = VALUE zcl_ai_summary=>ty_booking(
-      booking_id   = ls_booking-BookingId
-      service_type = ls_booking-SvcType
-      status_text  = ls_booking-StatusText
-      due_date     = |{ ls_booking-DueDate }| ).
-
-    DATA(lv_summary) = VALUE string( ).
-    TRY.
-        lv_summary = zcl_ai_summary=>summarize( ls_input ).
-      CATCH cx_root INTO DATA(lx_error).
-        lv_summary = |AI summary failed: { lx_error->get_text( ) }|.
-    ENDTRY.
-
-    MODIFY ENTITIES OF zi_svcbooking IN LOCAL MODE
-      ENTITY SvcBooking
-        UPDATE FIELDS ( AISUMMARY )
-        WITH VALUE #( ( %tky = ls_booking-%tky
-                        AISUMMARY = lv_summary ) ).
-
-  ENDLOOP.
-
-  " Return the updated rows to the Fiori app
-  READ ENTITIES OF zi_svcbooking IN LOCAL MODE
-    ENTITY SvcBooking
-      ALL FIELDS WITH CORRESPONDING #( keys )
-    RESULT DATA(lt_result).
-
-  result = VALUE #( FOR ls_row IN lt_result
-                    ( %tky  = ls_row-%tky
-                      %param = ls_row ) ).
-
-ENDMETHOD.
 
   METHOD normalizeKeys.
     READ ENTITIES OF zi_svcbooking IN LOCAL MODE

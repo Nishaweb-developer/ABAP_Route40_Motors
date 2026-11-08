@@ -1,0 +1,26 @@
+@Metadata.layer: #CUSTOMER
+annotate view ZC_Technician with
+{
+  @UI.facet: [ { id: 'main', type: #IDENTIFICATION_REFERENCE,
+                 label: 'Technician', position: 10 } ]
+
+   @UI.lineItem:       [ { position: 10, label: 'Tech ID' } ]
+  @UI.identification: [ { position: 10, label: 'Tech ID' } ]
+  TechId;
+
+  @UI.lineItem:       [ { position: 20, label: 'Name' } ]
+  @UI.identification: [ { position: 20, label: 'Name' } ]
+  Name;
+
+  @UI.lineItem:       [ { position: 30, label: 'Nationality' } ]
+  @UI.identification: [ { position: 30, label: 'Nationality' } ]
+  Nationality;
+
+  @UI.lineItem:       [ { position: 40, label: 'Department' } ]
+  @UI.identification: [ { position: 40, label: 'Department' } ]
+  Department;
+
+  @UI.lineItem:       [ { position: 50, label: 'Join Date' } ]
+  @UI.identification: [ { position: 50, label: 'Join Date' } ]
+  JoinDate;
+}

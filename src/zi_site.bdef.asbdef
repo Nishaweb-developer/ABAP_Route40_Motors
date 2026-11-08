@@ -1,4 +1,4 @@
-managed implementation in class zbp_i_site unique;
+managed implementation in class ZBP_I_SITE unique;
 strict(2);
 
 define behavior for ZI_Site alias Site

@@ -9,6 +9,7 @@ authorization master ( instance )
   create;
   update;
   delete;
+    action reserveOne;
 
   field ( readonly : update ) PartId, SiteId;
 
